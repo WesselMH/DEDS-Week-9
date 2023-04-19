@@ -8,7 +8,7 @@ from sklearn.cluster import KMeans
 from matplotlib import pyplot as plt
 import webcolors as wc
 
-dir_path = 'D:\Coding\Projects\School\SE2\DEDS\DEDS-Week-8\Scrapers\Bever\output\Images'
+dir_path = 'D:\Coding\SE2\DEDS\DEDS-Week-9\Images'
 
 csv_file = 'ColorAnalysis.csv'
 header = ['Image Name', 'Result']
@@ -27,9 +27,9 @@ def GetClosestColour(requested_colour):
 
 
 def ColorAnalysis(img):
-    clf = KMeans(n_clusters = 5, n_init=10)
+    clf = KMeans(n_clusters = 3, n_init='auto',copy_x=True, algorithm='elkan')
     color_labels = clf.fit_predict(img)
-    center_colors = clf.cluster_centers_    
+    center_colors = clf.cluster_centers_
     counts = Counter(color_labels)
     ordered_colors = [center_colors[i] for i in counts.keys()]
     ColorNames = []
@@ -45,7 +45,7 @@ def PrepImage(img):
     modifiedImage = img.reshape(img.shape[0]*img.shape[1], 3)
     return modifiedImage
 
-# Loop through each image in the directory
+
 def FindImages(path):
     images = []
     for file_name in os.listdir(path):
@@ -65,8 +65,6 @@ def FindImages(path):
 class MyThread(Thread):
     images = []
     
-
-    
     def __init__(self, name):
         Thread.__init__(self)
         self.name = name
@@ -81,12 +79,9 @@ class MyThread(Thread):
             print(ColorAnalysis(PrepImage(image)))
 
 
-        
-
 def create_threads():
     startTime = time.time()
-    
-    for i in range(int(len(images)/50)+5):
+    for i in range(2): #int(len(images)/250)
         name = "Thread #%s" % (i)
         my_thread = MyThread(name)
         my_thread.start()

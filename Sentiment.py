@@ -1,10 +1,12 @@
+import os
 import time
 import pandas as pd
 from textblob import TextBlob
 from textblob_nl import PatternTagger, PatternAnalyzer
 import csv
+import FileLib
 
-
+outputpath = os.path.dirname(__file__)+'/output/Sentiment/'
     
     
 def PreformAnalysis(text):
@@ -18,24 +20,20 @@ def PreformAnalysis(text):
     else:
         score_label = "negatief"
     
-    return [score_label, score, str(text).encode("charmap", errors="replace").decode("charmap")]
+    return [score_label,  str(text).encode("charmap", errors="replace").decode("charmap")]
 
 
 def start():
-    data = pd.read_csv("data.csv", skiprows=1)
+    data = pd.read_csv(os.path.dirname(__file__)+"/data.csv", skiprows=1)
 
     results = []
 
     for index, row in data.iterrows():
         
-        text = ",".join(row[2:].values.tolist())[0:]
-        results.append(([row[0]]+PreformAnalysis(text)))
-        
-    
-    with open("resultaten.csv", "w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["sku", "score"])
-        writer.writerows(results)
+        text = ". ".join(row[2:].values.tolist())[0:]
+        results.append(dict(sku = row[0], sentiment = PreformAnalysis(text)))
+    FileLib.WriteDataToJSON(outputpath+"Sentiment.json", results)
+    FileLib.WriteDictToSQLite("D:\Coding\SE2\DEDS\DEDS-DataStrait\die.sqlite",results)
         
 starttime = time.time()
 
