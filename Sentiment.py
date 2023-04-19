@@ -1,45 +1,44 @@
-# load libraries
-import stanza
+import time
 import pandas as pd
-
-# Download English language model and initialize the NLP pipeline.
-# stanza.download('en')
-nlp = stanza.Pipeline(lang='NL',dir='./stanzaData', use_gpu=True)
-
-moby_dick_para1 = "saai en ook zielig dood. Ik ben heel blij en vrolijk! "
-moby_p1 = nlp(moby_dick_para1) # return a Document object
+from textblob import TextBlob
+from textblob_nl import PatternTagger, PatternAnalyzer
+import csv
 
 
-def sentiment_descriptor(sentence):
-    """
-    - Parameters: sentence (a Stanza Sentence object)
-    - Returns: A string descriptor for the sentiment value of sentence.
-    """
-    sentiment_value = sentence.sentiment
-    if (sentiment_value == 0):
-        return "negative"
-    elif (sentiment_value == 1):
-        return "neutral"
+    
+    
+def PreformAnalysis(text):
+    blob = TextBlob(text, pos_tagger=PatternTagger(), analyzer=PatternAnalyzer())
+    score = blob.sentiment[0] #textblob-nl maintainer forgot to structure the return correctly so get the polarity by hand
+    
+    if score > 0:
+        score_label = "positief"
+    elif score == 0:
+        score_label = "neutraal"
     else:
-        return "positive"
+        score_label = "negatief"
+    
+    return [score_label, score, str(text).encode("charmap", errors="replace").decode("charmap")]
 
-print(sentiment_descriptor(moby_p1.sentences[0]))
 
-# neutral
+def start():
+    data = pd.read_csv("data.csv", skiprows=1)
 
-def sentence_sentiment_df(doc):
-    """
-    - Parameters: doc (a Stanza Document object)
-    - Returns: A Pandas DataFrame with one row for each sentence in doc,
-      and columns for the sentence text and sentiment descriptor.
-    """
-    rows = []
-    for sentence in doc.sentences:
-        row = {
-            "text": sentence.text,
-            "sentiment": sentiment_descriptor(sentence)
-        }
-        rows.append(row)
-    return pd.DataFrame(rows)
+    results = []
 
-print(sentence_sentiment_df(moby_p1))
+    for index, row in data.iterrows():
+        
+        text = ",".join(row[2:].values.tolist())[0:]
+        results.append(([row[0]]+PreformAnalysis(text)))
+        
+    
+    with open("resultaten.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["sku", "score"])
+        writer.writerows(results)
+        
+starttime = time.time()
+
+start()
+    
+print(time.time()- starttime)

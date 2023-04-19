@@ -1,0 +1,4 @@
+pandas
+textblob
+textblob-nl
+stanza
