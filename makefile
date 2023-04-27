@@ -1,8 +1,8 @@
-Scrapers = "./Scrapers/Scrapers"
+Scrapers = ./Scrapers/Scrapers
 BeverOutput = $(Scrapers)/Bever/output
 BolOutput = $(Scrapers)/Bol/output
-Hadoop = "./Hadoop"
-Analysis = "./Analysis"
+Hadoop = ./Hadoop
+Analysis = ./Analysis
 AnalysisInput = $(Analysis)/input
 
 all:
