@@ -1,9 +1,17 @@
+#Custom stuff
+stanzaData
+*.jpg
+*.png
+*.jpeg
+
+
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
-stanzaData
 
 # C extensions
 *.so

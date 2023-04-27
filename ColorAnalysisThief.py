@@ -10,7 +10,7 @@ import webcolors as wc
 from colorthief import ColorThief
 import FileLib
 
-imagePath = os.path.dirname(__file__)+'/Images/'
+imagePath = os.path.dirname(__file__)+'/input/Images/'
 outputpath = os.path.dirname(__file__)+'/output/Color/'
 
 csv_file = 'ColorAnalysis.csv'
