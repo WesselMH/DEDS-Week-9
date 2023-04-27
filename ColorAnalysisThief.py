@@ -29,6 +29,7 @@ def GetClosestColour(requested_colour):
 
 
 def ColorAnalysis(img):
+    
     ColorNames = []
     ColorHex = []
     
@@ -38,9 +39,13 @@ def ColorAnalysis(img):
         ColorHex.append(wc.conversion.rgb_to_hex(i))
         ColorNames.append(GetClosestColour(i))
     
-    return [ColorNames,ColorHex]
-
-
+    output = {}
+    for i in range(len(ColorNames)):
+        tempdict = {}
+        tempdict["colorname"+str(i)] = ColorNames[i]
+        tempdict["colorhex"+str(i)] = ColorHex[i]
+        output.update(tempdict)
+    return output
 
 
 def FindImages(path):
@@ -54,9 +59,22 @@ def FindImages(path):
 def start():
     imgs = FindImages(imagePath)
     results = []
+    
     for i in imgs:
-        results.append([i.split("/")[-1]]+ColorAnalysis(i))
-    FileLib.WriteDataToJSON(outputpath+"Color.json",results)
+        analysis = ColorAnalysis(i)
+        # print(analysis)
+        output = dict(skunr = i.split("/")[-1].split(".")[0])
+        output.update(analysis)
+        print(output)
+        results.append(output)
+        
+    FileLib.EnsureFileExists(outputpath)
+    FileLib.saveDictToJSON(outputpath+"Color.json",results)
+    FileLib.saveDictToCSV(outputpath+"Color.csv",results)
+    for line in results:
+        FileLib.saveDictToSQLITE(outputpath+"Color.sqlite","Analysis_Color",line)
+
+
     
 
 
