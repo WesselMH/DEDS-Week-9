@@ -1,4 +1,4 @@
-from csv import writer
+from csv import DictWriter, writer
 import os
 import json
 import pyodbc
@@ -17,7 +17,6 @@ def WriteDataToCSV(outfile, data):
         write = writer(out)
         write.writerows(data)
         
-        
 def EnsureFileExists(outfile):
     directory = os.path.dirname(outfile)
     if not os.path.exists(directory):
@@ -25,51 +24,40 @@ def EnsureFileExists(outfile):
     if not os.path.exists(outfile):
         open(outfile, 'w').close()
     
+def saveDictToJSON(output, data):
+    with open(output, 'w', encoding="utf8", newline="") as out:
+        json.dump(data, out, ensure_ascii=False)  
     
-    
-    
-    
-# def WriteDictToSQLite(DBFile, dicts):
-#     conn = sqlite3.connect(DBFile)
-#     table_name = "DEDS_DATA"
-#     keys = dicts[0].keys()
-#     query = f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(keys)})"
-#     conn.execute(query)
-
-#     for item in dicts:
-#         values = []
-#         for value in item.values():
-            
-#             # Convert boolean values to integer representation
-#             if isinstance(value, bool):
-#                 value = int(value)
-#             values.append(value)
-#         placeholders = ', '.join(['?'] * len(values))
-#         columns = ', '.join(item.keys())
-#         query = f"INSERT INTO {table_name} ({columns}) VALUES (?,?)"
-#         conn.execute(query, values)
-
-#     conn.commit()
-#     # Close the database connection
-#     conn.close()
+def saveDictToCSV(output, data):
+    with open(output, 'w', encoding="utf8", newline="") as out:
+        write = DictWriter(out, fieldnames=data[0].keys())
+        write.writeheader()
+        for entry in data:
+            write.writerow(entry)
     
 
-# def WriteDictToAcces(db_file,dicts):
-#     conn_str = (r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ='+db_file+';')
-#     with pyodbc.connect(conn_str) as conn:
-#         cursor = conn.cursor()
+def saveDictToSQLITE(database, table, data):
+    # connect to the database
+    conn = sqlite3.connect(database)
+    c = conn.cursor()
 
-#         keys = set()
-        
-#         tableName = "dict_table"
-        
-#         for dictionary in dicts:
-#             keys.update(dictionary.keys())
-#         columns = ', '.join(keys)
-#         cursor.execute(f"CREATE TABLE {tableName} [{columns}]")
+    # create the table if it doesn't exist
+    column_names = ", ".join(data.keys())
+    c.execute(f"CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY AUTOINCREMENT, {column_names})")
 
-#         for dictionary in dicts:
-#             values = tuple(dictionary.get(key, '') for key in keys)
-#             placeholders = ', '.join('?' * len(keys))
-#             cursor.execute(f"INSERT INTO {tableName} [{columns}] VALUES [{placeholders}]", values)
-#         conn.commit()
+    # Check if data already exists
+    placeholders = " AND ".join([f"{key} = ?" for key in data.keys()])
+    values = tuple(data.values())
+    c.execute(f"SELECT * FROM {table} WHERE {placeholders}", values)
+    existing_data = c.fetchone()
+
+    # insert the data into the table if it doesn't already exist
+    if not existing_data:
+        placeholders = ", ".join("?" * len(data))
+        c.execute(f"INSERT INTO {table} ({column_names}) VALUES ({placeholders})", values)
+
+
+    # commit the changes and close the connection
+    conn.commit()
+    conn.close()
+    
