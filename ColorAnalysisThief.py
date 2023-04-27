@@ -52,7 +52,7 @@ def FindImages(path):
     images = []
     for file_name in os.listdir(path):
         if file_name.endswith('.jpg') or file_name.endswith('.jpeg') or file_name.endswith('.png'):
-            images.append(os.path.join(imagePath, file_name))
+            images.append(os.path.join(path, file_name))
     return images
 
 
@@ -63,7 +63,7 @@ def start():
     for i in imgs:
         analysis = ColorAnalysis(i)
         # print(analysis)
-        output = dict(skunr = i.split("/")[-1].split(".")[0])
+        output = dict(skunr = i.split("/")[-1].split("\\")[-1].split(".")[0])
         output.update(analysis)
         print(output)
         results.append(output)
