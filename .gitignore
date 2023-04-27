@@ -4,7 +4,9 @@ stanzaData
 *.png
 *.jpeg
 *.sqlite
-
+*.json
+*.txt
+*.csv
 
 
 
