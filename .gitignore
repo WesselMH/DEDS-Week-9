@@ -3,6 +3,7 @@ stanzaData
 *.jpg
 *.png
 *.jpeg
+*.sqlite
 
 
 
