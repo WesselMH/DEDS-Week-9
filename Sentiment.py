@@ -12,9 +12,7 @@ inputpath = os.path.dirname(__file__)+"/input/data.txt"
 outputpath = os.path.dirname(__file__)+'/output/Sentiment/'
 dbpath = outputpath+"sentiment.sqlite"
 
-# Textblob trains the analyzer every time it is called. Declare the blob outside a function
-# So it is trained onlt once, thus drastically reducing runtime
-tb = Blobber(pos_tagger=PatternTagger(), analyzer=PatternAnalyzer())
+
     
 def PreformAnalysis(text):
     blob =  tb(text)
@@ -48,9 +46,13 @@ def start():
     FileLib.saveDictToCSV(outputpath+"Sentiment.csv", results)
     for line in results:
         FileLib.saveDictToSQLITE(dbpath,"Analysis_Sentiment",line)
+    return results
 
 
         
 starttime = time.time()
+# Textblob trains the analyzer every time it is called. Declare the blob outside a function
+# So it is trained onlt once, thus drastically reducing runtime
+tb = Blobber(pos_tagger=PatternTagger(), analyzer=PatternAnalyzer())
 start()
 print(time.time()- starttime)
