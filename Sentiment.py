@@ -3,7 +3,7 @@ import os
 import sqlite3
 import time
 import pandas as pd
-from textblob import TextBlob
+from textblob import Blobber
 from textblob_nl import PatternTagger, PatternAnalyzer
 from csv import DictWriter
 import FileLib
@@ -12,9 +12,12 @@ inputpath = os.path.dirname(__file__)+"/input/data.txt"
 outputpath = os.path.dirname(__file__)+'/output/Sentiment/'
 dbpath = outputpath+"sentiment.sqlite"
 
+# Textblob trains the analyzer every time it is called. Declare the blob outside a function
+# So it is trained onlt once, thus drastically reducing runtime
+tb = Blobber(pos_tagger=PatternTagger(), analyzer=PatternAnalyzer())
     
 def PreformAnalysis(text):
-    blob = TextBlob(text, pos_tagger=PatternTagger(), analyzer=PatternAnalyzer())
+    blob =  tb(text)
     score = blob.sentiment[0] #textblob-nl maintainer forgot to structure the return correctly so get the polarity by hand
     
     if score > 0:
