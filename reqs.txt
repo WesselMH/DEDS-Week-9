@@ -1,6 +1,0 @@
-pandas
-textblob
-textblob-nl
-stanza
-opencv-python
-scikit-learn
