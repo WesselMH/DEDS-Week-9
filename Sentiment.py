@@ -37,7 +37,9 @@ def start():
             skunr, text = line.strip().split(",", 1)
             
             analysis = PreformAnalysis(text.replace("\"",""))
-            results.append(dict(sku = skunr, sentiment = analysis[0], text = analysis[1]))
+            data = dict(sku = skunr, sentiment = analysis[0], text = analysis[1])
+            print(data)
+            results.append(data)
     
     
     FileLib.EnsureFileExists(outputpath)
