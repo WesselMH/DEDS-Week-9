@@ -5,7 +5,6 @@ import time
 import pandas as pd
 from textblob import Blobber
 from textblob_nl import PatternTagger, PatternAnalyzer
-from csv import DictWriter
 import FileLib
 
 inputpath = os.path.dirname(__file__)+"/input/data.txt"
@@ -29,7 +28,7 @@ def PreformAnalysis(text):
 
 
 def start():
-    data = pd.read_csv(inputpath, skiprows=1)
+    # data = pd.read_csv(inputpath, skiprows=1)
     results = []
 
     with open(inputpath, "r",encoding="utf-8") as file:
